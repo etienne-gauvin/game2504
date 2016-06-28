@@ -19,7 +19,34 @@
 			Matter.Engine.run( this.engine )
 			
 			this.stages = {}
-			this.gamepads = []
+			
+			this.gamepads = new GamepadListener
+			
+			this.AXES = {
+				LEFT_X: 0,
+				LEFT_Y: 1,
+				RIGHT_X: 2,
+				RIGHT_Y: 3
+			}
+				
+			this.BUTTONS = {
+				A: 0,
+				B: 1,
+				X: 2,
+				Y: 3,
+				LB: 4,
+				RB: 5,
+				LT: 6,
+				RT: 7,
+				BACK: 8,
+				START: 9,
+				
+				UP: 12,
+				DOWN: 13,
+				LEFT: 14,
+				RIGHT: 15
+			}
+			
 			
 			this.update()
 		}
@@ -38,7 +65,7 @@
 				
 			}
 			
-			var firstCallback = ( loader ) => {
+			let firstCallback = ( loader ) => {
 				
 				for ( let name in loader.resources ) {
 					
@@ -81,8 +108,6 @@
 			this.stage = stage
 			this.stage.start()
 			
-			console.log(`game.start`, this.stage)
-			
 		}
 		
 		/**
@@ -95,7 +120,7 @@
 				
 				let dt = ( time - this.time ) / 1000
 				
-				this.gamepads = navigator.getGamepads()
+				this.gamepads.update()
 				
 				if ( this.stage != null ) {
 					
@@ -110,6 +135,21 @@
 			}
 			    
 			requestAnimationFrame( this.update.bind( this ) )
+			
+		}
+		
+		/**
+		 * Listen to events on a button (on the first Gamepad)
+		 */
+		addButtonPressedListener( id, callback ) {
+			
+			if ( !this.buttonsListeners[ id ] ) {
+				
+				this.buttonsListeners[ id ] = []
+				
+			}
+			
+			this.buttonPressedListeners[ id ].push( callback )
 			
 		}
 		

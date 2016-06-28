@@ -6,6 +6,9 @@ class Player extends GameObject {
 		
 		this.dobj = new PIXI.Sprite.fromImage('assets/test.png')
 		
+		this.position.x = 300
+		this.position.y = 10
+		
 		this.body = Matter.Bodies.circle(
 			this.position.x,
 			this.position.y,
@@ -14,8 +17,15 @@ class Player extends GameObject {
 		
 		this.composite = Matter.Composite.create( { bodies: [ this.body ] } )
 		
-		
-		this.prevButtonState = GAME.get
+		GAME.gamepads.addButtonListener( 0, GAME.BUTTONS.UP, ( button ) => {
+			
+			if ( button.pressed ) {
+				
+				this.jump()
+				
+			}
+			
+		} )
 		
 	}
 	
@@ -24,24 +34,15 @@ class Player extends GameObject {
 		
 		this.dobj.position = this.body.position
 		
-		let gamepad = GAME.gamepads[0] 
+	}
+	
+	jump() {
+		console.log('jump')
 		
-		if ( gamepad ) {
-			
-			if ( !this.prevButtonState && gamepad.buttons[0].pressed ) {
-				
-				console.log('BAM')
-				Matter.Body.applyForce(
-					this.body,
-					this.body.position,
-					{ x: 0, y: -0.1 }
-				)
-				
-			}
-			
-			this.prevButtonState = gamepad.buttons[0].pressed
-			
-		}
-		
+		Matter.Body.applyForce(
+			this.body,
+			{ x: this.body.position.x, y: this.body.position.y },
+			{ x: 0, y: -0.1 }
+		)
 	}
 }

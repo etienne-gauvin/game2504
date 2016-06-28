@@ -4,19 +4,17 @@ class PlayStage extends Stage {
 		
 		super()
 		
-		this.displayObject = new PIXI.Container
-		
-		this.composite = GAME.engine.world
-		
 	}
 	
 	start() {
 		
+		super.start()
+		
 		this.player = new Player
 		this.addChild( this.player )
 		
-		this.ground = Matter.Bodies.rectangle( 400, 610, 810, 60, { isStatic: true } )
-		Matter.Composite.add( this.composite, this.ground )
+		this.ground = new Ground
+		this.addChild( this.ground )
 		
 	}
 	

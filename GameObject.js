@@ -7,11 +7,8 @@ class GameObject {
 	
 	constructor() {
 		
-		// <GameObject>
-		this.parent = null
-		
 		// <PIXI.DisplayObject>
-		this.displayObject = null
+		this.dobj = null
 		
 		// <Matter.Composite>
 		this.composite = null
@@ -19,53 +16,35 @@ class GameObject {
 	}
 	
 	/**
-	 * <GameObject> child
+	 * Add a child to this this object if his DisplayObject is a Container
+	 * 
+	 * @param <GameObject> child
 	 */
 	
 	addChild( child ) {
 		
-		if ( ! child instanceof GameObject ) {
+		if ( ! this.dobj instanceof PIXI.Container ) {
 			
-			throw new Error( `${child} isn't a GameObject instance` )
+			throw new Error( `${this} isn't a container` )
 			
 		}
 		else {
 			
-			if ( child.parent ) {
+			if ( child.dobj ) {
 				
-				throw new Error( `${child.toString()} already has a parent ${child.parent}` )
+				child.dobj.setParent( this.dobj )
 				
 			}
-			else {
+			
+			if ( child.composite ) {
 				
-				if ( ! this.displayObject instanceof PIXI.Container ) {
+				if ( child.composite.parent ) {
 					
-					throw new Error( `${this} isn't a container` )
-					
-				}
-				else {
-					
-					child.parent = this
-					
-					if ( child.displayObject ) {
-						
-						child.displayObject.setParent( this.displayObject )
-						
-					}
-					
-					if ( child.composite ) {
-						
-						if ( child.composite.parent ) {
-							
-							Matter.Composite.remove( child.composite.parent, child.composite )
-							
-						}
-						
-						Matter.Composite.add( this.composite, child.composite )
-						
-					}
+					Matter.Composite.remove( child.composite.parent, child.composite )
 					
 				}
+				
+				Matter.Composite.add( this.composite, child.composite )
 				
 			}
 			
@@ -73,49 +52,62 @@ class GameObject {
 		
 	}
 	
-	
+	/**
+	 * Update the object
+	 * 
+	 * @param <Number> delta: temps en secondes depuis le dernier affichage
+	 */
 	update( delta ) {
 		
-		if ( this.displayObject && this.body ) {
+	}
+	
+	/**
+	 * Shortcut for the position
+	 * 
+	 * @return <PIXI.Point>
+	 */
+	get position() {
+		
+		if ( !this.dobj ) {
 			
-			this.copyPosition( this.body )
+			throw new Error( `${this} has no dobj` )
+			
+		}
+		else {
+			
+			return this.dobj.position
 			
 		}
 		
 	}
 	
-	
-	copyPosition( body ) {
-		
-		if ( this.displayObject && this.composite ) {
-			
-			this.displayObject.position.copy( body.position )
-			
-		}
-		
-	}
-	
-	get x() {
-		return this.displayObject.position.x
-	}
-	
-	get y() {
-		return this.displayObject.position.y
-	}
-	
-	set x( value ) {
-		this.displayObject.position.x = value
-	}
-	
-	set y( value ) {
-		this.displayObject.position.y = value
-	}
-	
-	
+	/**
+	 * Get the object as a string
+	 * 
+	 * @return <String>
+	 */
 	toString() {
 		
 		return this.__proto__.constructor.name
 		
+	}
+	
+	/**
+	 * Destroy the object
+	 */
+	destroy( recursive = true ) {
+		
+		if ( this.dobj != null ) {
+			
+			this.dobj.destroy()
+			
+		}
+		
+		if ( this.composite != null ) {
+			
+			Matter.Composite.remove( this.composite.parent, this.composite, recursive )
+		
+		}
 	}
 	
 }

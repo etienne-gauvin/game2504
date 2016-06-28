@@ -4,6 +4,7 @@
 		
 		init() {
 			
+			// <PIXI.Loader>
 			this.loader = PIXI.loader
 			
 			this.assets = {}
@@ -17,8 +18,10 @@
 			this.engine = Matter.Engine.create()
 			Matter.Engine.run( this.engine )
 			
-			this.update()
+			this.stages = {}
+			this.gamepads = []
 			
+			this.update()
 		}
 		
 		
@@ -69,8 +72,16 @@
 		
 		start( stage ) {
 			
+			if ( this.stage ) {
+				
+				this.stage.stop()
+				
+			}
+			
 			this.stage = stage
 			this.stage.start()
+			
+			console.log(`game.start`, this.stage)
 			
 		}
 		
@@ -84,9 +95,15 @@
 				
 				let dt = ( time - this.time ) / 1000
 				
-				this.stage.update( dt )
+				this.gamepads = navigator.getGamepads()
 				
-			    this.renderer.render( this.stage.displayObject )
+				if ( this.stage != null ) {
+					
+					this.stage.update( dt )
+					
+				    this.renderer.render( this.stage.dobj )
+				    
+				}
 				
 				this.time = time
 				
@@ -99,6 +116,5 @@
 	}
 	
 	window.GAME = new Game
-	console.log(GAME)
 	
 } ) ( window )
